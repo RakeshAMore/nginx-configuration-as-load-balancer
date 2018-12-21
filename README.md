@@ -40,3 +40,28 @@ http {
   include servers/*;
 }
 ```
+as you at last it says that, its include all configuraiton files which are under folder "servers", so lets create separate configuration file under servers directory for out service
+```
+sudo vim /usr/local/etc/nginx/servers/myLocalTestService.conf
+```
+And below configuratio in this file, considering you have started service instances are avialble on ports 7979,8989. 
+```
+server{
+	listen	80;
+	server_name  local.testservice.com;
+
+	location / {
+		proxy_pass http://backend;
+	}
+}
+
+upstream backend {
+    server localhost:7979;
+    server localhost:8989;
+}
+```
+Once all the configuration is done you have to restart/reload the nginx server
+```
+sudo nginx reload
+```
+Now, whenever your hitting http://local.testservice.com on local machine it will get server from two server instances http://localhost:8989 and http://localhost:7979
